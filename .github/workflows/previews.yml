@@ -41,6 +41,16 @@ jobs:
         - name: List changed stacks
           id: list-changed-stacks
           run: terramate list --changed
+          
+        - name: Configure AWS credentials
+          if: steps.list-changed-stacks.outputs.stdout
+          uses: aws-actions/configure-aws-credentials@v2
+          with:
+            aws-region: ${{ env.AWS_REGION }}
+            role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github
+          env:
+            AWS_REGION: us-east-1
+            AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
 
         - name: Run OpenTofu Init
           if: steps.list-changed-stacks.outputs.stdout
