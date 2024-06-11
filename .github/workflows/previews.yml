@@ -1,0 +1,51 @@
+name: OpenTofu Preview
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  preview:
+    name: Plan OpenTofu Changes in changed Stacks
+    runs-on: ubuntu-latest
+
+    permissions:
+        id-token: write
+        contents: read
+        pull-requests: write
+        checks: read
+    
+    steps:
+        ### Check out the code
+  
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            ref: ${{ github.head_ref }}
+            fetch-depth: 0
+            #
+      ### Install tooling
+
+        - name: Install Terramate
+          uses: terramate-io/terramate-action@v2
+
+        - name: Install asdf
+          uses: asdf-vm/actions/setup@v3
+
+        - name: Install OpenTofu with asdf
+          run: |
+              asdf plugin add opentofu
+              asdf install opentofu
+              
+        - name: List changed stacks
+          id: list-changed-stacks
+          run: terramate list --changed
+
+        - name: Run OpenTofu Init
+          if: steps.list-changed-stacks.outputs.stdout
+          run: terramate run --changed -- tofu init
+
+        - name: Run OpenTofu Plan
+          if: steps.list-changed-stacks.outputs.stdout
+          run: terramate run --changed -- tofu plan
