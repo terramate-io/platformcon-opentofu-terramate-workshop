@@ -1,13 +1,13 @@
-name: OpenTofu Preview
+name: OpenTofu Deploy
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
   preview:
-    name: Plan OpenTofu Changes in changed Stacks
+    name: Deploy OpenTofu Changes in changed Stacks
     runs-on: ubuntu-latest
 
     permissions:
@@ -61,9 +61,17 @@ jobs:
           run: |
             terramate run \
               --changed \
-              --continue-on-error \
               --parallel 5 \
-              --sync-preview \
-              --tofu-plan-file out.tfplan \
               -- \
               tofu plan -out out.tfplan -detailed-exitcode
+
+        - name: Run OpenTofu Deploy
+          if: steps.list-changed-stacks.outputs.stdout
+          run: |
+            terramate run \
+              --changed \
+              --parallel 5 \
+              --sync-deployment \
+              --tofu-plan-file out.tfplan \
+              -- \
+              tofu apply -input=false -auto-approve out.tfplan
