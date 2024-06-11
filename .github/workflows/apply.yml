@@ -63,7 +63,7 @@ jobs:
               --changed \
               --parallel 5 \
               -- \
-              tofu plan -out out.tfplan -detailed-exitcode
+              tofu plan -out out.tfplan
 
         - name: Run OpenTofu Deploy
           if: steps.list-changed-stacks.outputs.stdout
