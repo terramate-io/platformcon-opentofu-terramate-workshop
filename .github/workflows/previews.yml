@@ -48,4 +48,12 @@ jobs:
 
         - name: Run OpenTofu Plan
           if: steps.list-changed-stacks.outputs.stdout
-          run: terramate run --changed -- tofu plan
+          run: |
+            terramate run \
+              --changed \
+              --continue-on-error \
+              --parallel 5 \
+              --sync-preview \
+              --tofu-plan-file out.tfplan \
+              -- \
+              tofu plan -out out.tfplan -detailed-exitcode
