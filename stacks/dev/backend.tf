@@ -6,6 +6,6 @@ terraform {
     dynamodb_table = "terraform-lock"
     encrypt        = true
     key            = "opentofu/stacks/362b3a1a-bde8-4417-a5e6-16e455a89cd6/terraform.tfstate"
-    region         = "us-west-1"
+    region         = "us-east-1"
   }
 }

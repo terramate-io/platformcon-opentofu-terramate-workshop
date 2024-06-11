@@ -10,7 +10,7 @@ generate_hcl "backend.tf" {
   content {
     terraform {
       backend "s3" {
-        region         = "us-west-1"
+        region         = tm_try(global.terraform.backend.region, "us-east-1")
         bucket         = global.terraform.backend.bucket
         key            = "opentofu/stacks/${terramate.stack.id}/terraform.tfstate"
         encrypt        = true
