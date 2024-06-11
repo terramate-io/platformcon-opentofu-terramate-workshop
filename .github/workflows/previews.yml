@@ -39,10 +39,13 @@ jobs:
               asdf install opentofu
               
         - name: List changed stacks
+          id: list-changed-stacks
           run: terramate list --changed
 
         - name: Run OpenTofu Init
-          run: terramate run -- tofu init
+          if: steps.list-changed-stacks.outputs.stdout
+          run: terramate run --changed -- tofu init
 
         - name: Run OpenTofu Plan
-          run: terramate run -- tofu plan
+          if: steps.list-changed-stacks.outputs.stdout
+          run: terramate run --changed -- tofu plan
